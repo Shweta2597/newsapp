@@ -1,9 +1,22 @@
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
 import Spinner from './Spinner';
+import PropTypes from 'prop-types'
+
 
 export class News extends Component {
-    articles=[];
+
+    static defaultProps = {
+        country: 'in',
+        pageSize:8,
+        category:'general'
+      }
+
+    static propType = {
+        country: PropTypes.string,
+        pageSize: PropTypes.number,
+        category: PropTypes.string,
+    }
 
     constructor(){
         super();
@@ -16,7 +29,7 @@ export class News extends Component {
     }
 
     handlePreviousClick = async() => {
-        let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=3c838f43c72d4899a199e23511e0824c&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=3c838f43c72d4899a199e23511e0824c&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
         this.setState({
             loading: true
         })
@@ -33,7 +46,7 @@ export class News extends Component {
 
         if(!(this.state.page + 1 > Math.ceil(this.state.totalArticles/this.props.pageSize))){
 
-            let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=3c838f43c72d4899a199e23511e0824c&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+            let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=3c838f43c72d4899a199e23511e0824c&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
             this.setState({
                 loading: true
             })
@@ -50,7 +63,7 @@ export class News extends Component {
 
 
     async componentDidMount(){
-        let url =`https://newsapi.org/v2/top-headlines?country=in&apiKey=3c838f43c72d4899a199e23511e0824c&pageSize=${this.props.pageSize}`;
+        let url =`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=3c838f43c72d4899a199e23511e0824c&pageSize=${this.props.pageSize}`;
         this.setState({
             loading: true
         })
@@ -66,7 +79,7 @@ export class News extends Component {
   render() {
     return (
       <div className='container my-3'>
-        <h2 className='text-center'>News Monkey - Top Headlines</h2>
+        <h2 className='text-center' style={{margin: '30px 0px'}}>News Monkey - Top Headlines</h2>
         {this.state.loading && <Spinner></Spinner>}
         <div className="row">
         {!this.state.loading && this.state.articles.map((element)=>{
