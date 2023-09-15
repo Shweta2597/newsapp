@@ -59,11 +59,16 @@ export class News extends Component {
     this.updateNews();
   }
 
+  capiltalize(data) {
+    let mData = data.charAt(0).toUpperCase() + data.slice(1, data.length);
+    return mData;
+  }
+
   render() {
     return (
       <div className="container my-3">
         <h2 className="text-center" style={{ margin: "30px 0px" }}>
-          News Monkey - Top Headlines
+          News Monkey - Top {this.capiltalize(this.props.category)} Headlines
         </h2>
         {console.log(this.state.articles)}
         {this.state.loading && <Spinner></Spinner>}
