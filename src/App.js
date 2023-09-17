@@ -10,9 +10,14 @@ import { BrowserRouter as Router,
 
 //  business  entertainment  general  health  science  sports  technology
 //   3c838f43c72d4899a199e23511e0824c
+//   98d7b3ef7886423a963bec9c61312628
+//   d4191243aa264adebf19ef20cb2d1722
+//   87e001402f9c407ebfb8b0603f21f3a1
+//  22253b169f4f4d6f994cc0b67855362c
+//   d093053d72bc40248998159804e0e67d
 
 export default class App extends Component {
-  pageSize = 11;
+  pageSize = 12;
   render() {
     return (
       <div>

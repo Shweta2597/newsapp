@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import PropTypes from "prop-types";
+import InfiniteScroll from 'react-infinite-scroll-component';
+import altimage from '../altimage.jpg'
+
 
 export class News extends Component {
   static defaultProps = {
@@ -18,7 +21,6 @@ export class News extends Component {
 
   constructor() {
     super();
-    console.log("Constructur here from news component");
     this.state = {
       articles: [],
       loading: false,
@@ -27,33 +29,58 @@ export class News extends Component {
   }
 
   async updateNews() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=98d7b3ef7886423a963bec9c61312628&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-    console.log(url);
+    this.setState({
+        page: this.state.page + 1      });
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=d4191243aa264adebf19ef20cb2d1722&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    this.setState({
+      loading: true,
+    });
+
+    let data = await fetch(url);
+    let parseData = await data.json();
+    this.setState({
+      articles: parseData.articles,
+      totalResults: parseData.totalResults,
+      loading: false,
+
+
+    });
+  }
+
+
+  fetchMoreData = async() => {
+
+    this.setState({
+    })
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=d4191243aa264adebf19ef20cb2d1722&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
     this.setState({
       loading: true,
     });
     let data = await fetch(url);
     let parseData = await data.json();
     this.setState({
-      articles: parseData.articles,
-      totalArticles: parseData.totalResults,
+      articles: this.state.articles.concat(parseData.articles),
+      totalResults: parseData.totalResults,
       loading: false,
+      page: this.state.page + 1,
+
     });
   }
 
-  handlePreviousClick = async () => {
-    this.setState({
-      page: this.state.page - 1,
-    });
-    this.updateNews();
-  };
+//   handlePreviousClick = async () => {
+//     this.setState({
+//       page: this.state.page - 1,
+//     });
+//     this.updateNews();
+//   };
 
-  handleNextClick = async () => {
-    this.setState({
-      page: this.state.page + 1,
-    });
-    this.updateNews();
-  };
+//   handleNextClick = async () => {
+//     this.setState({
+//       page: this.state.page + 1,
+//     });
+//     this.updateNews();
+//   };
 
   async componentDidMount() {
     this.updateNews();
@@ -70,10 +97,16 @@ export class News extends Component {
         <h2 className="text-center" style={{ margin: "30px 0px" }}>
           News Monkey - Top {this.capiltalize(this.props.category)} Headlines
         </h2>
-        {console.log(this.state.articles)}
-        {this.state.loading && <Spinner></Spinner>}
+        {/* {this.state.loading && <Spinner></Spinner>} */}
+        <InfiniteScroll
+        dataLength={this.state.articles.length}
+        next={this.fetchMoreData}
+        hasMore={(this.state.totalResults%this.state.articles.length)!==0}
+        loader={this.state.loading && <Spinner></Spinner>}
+        >
+            <div className="container">
         <div className="row">
-          {!this.state.loading &&
+          {
             this.state.articles.map((element) => {
               return (
                 <div className="col-md-4" key={element.url}>
@@ -84,7 +117,7 @@ export class News extends Component {
                         ? element.description
                         : "No Description"
                     }
-                    imageUrl={element.urlToImage}
+                    imageUrl={element.urlToImage===null?altimage:element.urlToImage}
                     newsUrl={element.url}
                     author={element.author ? element.author : "Unknown"}
                     time={element.publishedAt}
@@ -94,8 +127,9 @@ export class News extends Component {
               );
             })}
         </div>
-
-        <div className="container d-flex justify-content-between my-4">
+        </div>
+        </InfiniteScroll>
+        {/* <div className="container d-flex justify-content-between my-4">
           <button
             type="button"
             disabled={this.state.page <= 1}
@@ -108,14 +142,14 @@ export class News extends Component {
             type="button"
             disabled={
               this.state.page + 1 >
-              Math.ceil(this.state.totalArticles / this.props.pageSize)
+              Math.ceil(this.state.totalResults / this.props.pageSize)
             }
             className="btn btn-dark"
             onClick={this.handleNextClick}
           >
             Next &rarr;
           </button>
-        </div>
+        </div> */}
       </div>
     );
   }
